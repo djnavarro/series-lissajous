@@ -2,7 +2,7 @@
 # set up ------------------------------------------------------------------
 
 name <- "lissajous"
-version <- 02
+version <- 03
 
 # define common helper functions & core tools
 source(here::here("source", "common.R"), echo = FALSE)
@@ -18,7 +18,7 @@ make_art <- function(seed, name, version) {
   set.seed(seed)
   
   # set up palettes
-  palettes <- c("palette_02.csv", "palette_02.csv") |> 
+  palettes <- c("palette_01.csv", "palette_02.csv", "palette_02.csv") |> 
     purrr::map(
       \(x) here::here("source", x) |> 
         readr::read_csv(show_col_types = FALSE)
@@ -31,24 +31,27 @@ make_art <- function(seed, name, version) {
   palette <- sample(palette)
   
   # parameters that affect all bezier objects
-  pull_1 <- runif(1, min = -.1, max = .1)
-  pull_2 <- runif(1, min = 0, max = .2)
+  pull_1 <- runif(1, min = -.1, max = .1) * .75
+  pull_2 <- runif(1, min = 0, max = .2) * .75
   x_mid <- runif(1, min = -2, max = 2)
   y_mid <- runif(1, min = -2, max = 2)
-  width_scale <- runif(1, min = .2, max = ,7)
-  max_arc <- runif(1, min = pi/18, max = pi/12)
-
+  width_scale <- runif(1, min = 1, max = 2)
+  max_arc <- runif(1, min = 1, max = 2) * pi/96
+  
   # boring lissajous parameters
   A <- 1 # width of the curve
   B <- 1 # height of the curve 
-  
-  # fun lissajous parameters 
-  delta <- pi/2
-  a <- 1 + rbinom(1, size = 10, prob = .5)
-  b <- 1 + rbinom(1, size = 10, prob = .5)
 
+  # fun lissajous parameters 
+  a <- 1 + rbinom(1, size = 20, prob = .5)
+  b <- 1 + rbinom(1, size = 20, prob = .5)
+  delta <- pi/2
+  
+  # rescale width
+  width_scale <- width_scale * (1 + sqrt(abs(a - b))) * 1.2
+  
   # data frame containing parameters 
-  n_ribbons <- 500L
+  n_ribbons <- 600L
   values <- tibble::tibble(
     theta_1 = runif(n_ribbons, min = 0, max = 2 * pi),
     theta_2 = theta_1 + runif(n_ribbons, min = 0, max = max_arc),
@@ -87,5 +90,5 @@ make_art <- function(seed, name, version) {
 
 }
 
-for(s in 500:699) make_art(s, name, version)
+for(s in 100:299) make_art(s, name, version)
 
